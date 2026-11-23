@@ -45,8 +45,8 @@ class _PlayerPageState extends State<PlayerPage> {
   Future<void> _download() async {
     setState(() => _downloading = true);
     try {
-      final path = await OnlineDownloadService()
-          .downloadSong(widget.song, KugouQuality.standard);
+      final path = await OnlineDownloadService.instance
+    .downloadSong(widget.song, KugouQuality.standard);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(path == null ? '下载失败' : '已下载到：$path')),

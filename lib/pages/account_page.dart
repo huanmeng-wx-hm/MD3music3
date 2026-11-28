@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../services/kugou_api/kugou_api_client.dart';
+import '../services/sign_in_service.dart';
+import 'sign_in_calendar_page.dart';
 
 /// 右栏：账号 / 会员 / 关于。登录走旧仓那套二维码 API。
 class AccountPage extends StatefulWidget {
@@ -106,6 +108,8 @@ class _AccountPageState extends State<AccountPage>
             Navigator.of(context).pop();
           }
           if (mounted) await _refresh();
+          // 登录成功也补一次（与播放触发共用当天去重，不会重复请求）。
+          unawaited(SignInService.instance.autoSignIfNeeded());
         } else {
           _qrStatus.value = '登录响应缺少凭证，请刷新二维码重试';
         }
@@ -219,6 +223,16 @@ class _AccountPageState extends State<AccountPage>
             title: const Text('会员'),
             subtitle: Text(_vip),
             onTap: _refresh,
+          ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month_outlined),
+            title: const Text('签到日历'),
+            subtitle: const Text('播放自动签到 · 手动兜底'),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const SignInCalendarPage(),
+              ),
+            ),
           ),
           const Divider(),
           const ListTile(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../data/models/song.dart';
 import '../providers/player_provider.dart';
 import '../services/history_service.dart';
+import '../services/quality_pref.dart';
 import '../services/kugou_api/kugou_api_client.dart';
 import '../services/kugou_api/kugou_models.dart';
 import 'downloads_page.dart';
@@ -63,8 +63,11 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _play(KugouSongDetail d) async {
     final song = d.toSong();
     final player = context.read<PlayerProvider>();
+    // 播放也走用户选的音质（与下载共用同一档偏好）。
+    final quality = await QualityPref.instance.load();
     final url = await _api.getSongUrlWithFallback(
       d.hash,
+      quality: quality,
       albumId: d.albumId,
       albumAudioId: d.albumAudioId,
     );
